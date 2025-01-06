@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { signupSchema } from '@/schemas/signUpSchema'
+import { signUpSchema } from '@/schemas/signUpSchema'
 import { verifySchema } from '@/schemas/verifySchema'
 import { ApiResponse } from '@/types/ApiResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -38,11 +38,11 @@ const VerifyAccount = () => {
 
             router.replace('/sign-in')
         }catch(error){
-            console.error("Error in signup of user",error)
+            console.error("Error in signUp of user",error)
             const axiosError = error as AxiosError<ApiResponse>;
 
             toast({
-                title:"Signup failed",
+                title:"signUp failed",
                 description: axiosError.response?.data.message,
                 variant:"destructive"
             })

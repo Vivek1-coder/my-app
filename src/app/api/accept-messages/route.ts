@@ -100,7 +100,7 @@ export async function GET(request: Request){
         return Response.json(
             {
                 success:true,
-                isAcceptingMessagess: foundUser.isAcceptingMessages
+                isAcceptingMessages: foundUser.isAcceptingMessages
             },
             {status:200}
         )
