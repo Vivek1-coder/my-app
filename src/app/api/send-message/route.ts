@@ -3,15 +3,25 @@ import UserModel from "@/model/User";
 import { Message } from "@/model/User";
 
 export async function POST(request:Request) {
-    const {username,content} = await request.json()
-    
+    await dbConnect();
+    console.log("Sending message....")
     try {
+        const {username,content} = await request.json()
+        if(!username || !content){
+            return Response.json(
+                {
+                    success : false,
+                    message:"Username or content not available"
+                },
+                { status : 404 }
+            )
+        }
         const user = await UserModel.findOne({username})
         if(!user){
             return Response.json(
                 {
                     success : false,
-                    message:"Not Authentication"
+                    message:"No Username of this name"
                 },
                 { status : 404 }
             )

@@ -21,6 +21,7 @@ export default function signUpForm() {
   const [username, setUsername] = useState('');
   const [usernameMessage, setUsernameMessage] = useState('');
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const debounced = useDebounceCallback(setUsername, 300);
 
@@ -39,17 +40,18 @@ export default function signUpForm() {
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (username) {
-        setIsCheckingUsername(true);
-        setUsernameMessage(''); // Reset message
         try {
           const response = await axios.get<ApiResponse>(
             `/api/check-username-unique?username=${username}`
           );
           setUsernameMessage(response.data.message);
+          if(usernameMessage === "Username available"){
+            setIsUsernameAvailable(true);
+          }
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>;
           setUsernameMessage(
-            axiosError.response?.data.message ?? 'Error checking username'
+            axiosError.response?.data.message || 'Error checking username'
           );
         } finally {
           setIsCheckingUsername(false);
@@ -121,7 +123,7 @@ export default function signUpForm() {
                   {!isCheckingUsername && usernameMessage && (
                     <p
                       className={`text-sm ${
-                        usernameMessage === 'Username is unique'
+                        isUsernameAvailable 
                           ? 'text-green-500'
                           : 'text-red-500'
                       }`}

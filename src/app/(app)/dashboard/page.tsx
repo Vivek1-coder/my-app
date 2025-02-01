@@ -1,6 +1,7 @@
 'use client'
 import { MessageCard } from '@/components/MessageCard';
 import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
@@ -9,16 +10,21 @@ import { acceptMessageSchema } from '@/schemas/acceptMessageSchema';
 import { ApiResponse } from '@/types/ApiResponse';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios, { AxiosError } from 'axios';
-import { Loader2, RefreshCcw } from 'lucide-react';
+import { FileDiff, Loader2, RefreshCcw } from 'lucide-react';
 import { User } from 'next-auth';
+import { Input } from "@/components/ui/input"
 import { useSession } from 'next-auth/react';
+
 import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 
 const page = () => {
   const [messages,setMessages] = useState<Message[]>([]);
   const [isLoading,setIsLoading] = useState(false)
+  const [isSending,setIsSending] = useState(false)
   const [isSwitchLoading,setIsSwitchLoading] = useState(false)
+  const [fusername,setFusername] = useState("")
+  const [content,setContent] = useState("")
 
   const {toast} = useToast()
 
@@ -84,6 +90,8 @@ const page = () => {
     }
 
   },[setIsLoading,setMessages])
+
+ 
   
   useEffect(()=>{
     if(!session ||!session.user) return;
@@ -109,6 +117,30 @@ const page = () => {
       toast({
         title:"Error",
         description:axiosError.response?.data.message || "Failed to fetch message settings",
+        variant:"destructive"
+      })
+    }
+  }
+
+  const SendMessage = async() =>{
+    try {
+      setIsSending(true)
+      const response = await axios.post<ApiResponse>(`/api/send-message`,{
+        username:fusername,
+        content:content
+      })
+      
+      toast({
+        title: response.data.message,
+        variant:'default'
+      })
+      setIsSending(false);
+    } catch (error) {
+      setIsSending(false);
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast({
+        title:"Sorry",
+        description:axiosError.response?.data.message || "Failed to send message ",
         variant:"destructive"
       })
     }
@@ -160,6 +192,17 @@ const page = () => {
           </span>
         </div>
         <Separator />
+
+        <div >
+          <form className='flex flex-col gap-3 p-3' onSubmit={SendMessage}>
+          
+          <input onChange={(e)=>setFusername(e.target.value)} placeholder='Enter the username of friend' className='bg-gray-400 w-60 h-11 text-center text-black bg-opacity-30 rounded-lg'/>
+          <textarea onChange={(e)=>setContent(e.target.value)} placeholder='Type the message' className='bg-gray-400 w-full h-32 text-black bg-opacity-30 rounded-lg px-4 py-3'/>
+          <button type="submit" className='bg-blue-500 w-32 h-11 rounded-lg p-1'>{isSending?"Sending...":"Send"}</button>
+          </form>
+        </div>
+
+        <Separator/>
   
         <Button
           className="mt-4"
@@ -175,11 +218,13 @@ const page = () => {
             <RefreshCcw className="h-4 w-4" />
           )}
         </Button>
+        
+        
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
           {messages.length > 0 ? (
             messages.map((message, index) => (
               <MessageCard
-              
+                key={message._id as string}
                 message={message}
                 onMessageDelete={handleDeleteMessage}
               />
