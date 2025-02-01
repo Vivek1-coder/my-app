@@ -1,7 +1,6 @@
 'use client'
 import { MessageCard } from '@/components/MessageCard';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
@@ -10,15 +9,14 @@ import { acceptMessageSchema } from '@/schemas/acceptMessageSchema';
 import { ApiResponse } from '@/types/ApiResponse';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios, { AxiosError } from 'axios';
-import { FileDiff, Loader2, RefreshCcw } from 'lucide-react';
+import { Loader2, RefreshCcw } from 'lucide-react';
 import { User } from 'next-auth';
-import { Input } from "@/components/ui/input"
 import { useSession } from 'next-auth/react';
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 
-const page = () => {
+const Page = () => {
   const [messages,setMessages] = useState<Message[]>([]);
   const [isLoading,setIsLoading] = useState(false)
   const [isSending,setIsSending] = useState(false)
@@ -237,4 +235,4 @@ const page = () => {
     );
   }
   
-export default page
+export default Page
