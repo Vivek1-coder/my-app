@@ -57,7 +57,7 @@ export async function POST(request:Request){
         return Response.json(
             {
                 success:false,
-                message:"failed to update user status to accept messages"
+                message:`failed to update user status to accept messages ${error}`
             },{
                 status:500
             }
@@ -66,7 +66,7 @@ export async function POST(request:Request){
 
 }
 
-export async function GET(request: Request){
+export async function GET(){
     await dbConnect()
 
     const session = await getServerSession(authOptions)
@@ -109,7 +109,7 @@ export async function GET(request: Request){
         return Response.json(
             {
                 success:false,
-                message:"Error in getting message acceptance status"
+                message:`Error in getting message acceptance status ${error}`
             },{
                 status:500
             }
